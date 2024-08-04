@@ -28,7 +28,7 @@
             <div class="flex items-center space-x-4">
                 <input type="checkbox" id="includePath" name="includePath" class="mr-2" checked>
                 <label for="path" class="w-24">Path:</label>
-                <input type="text" id="path" name="path" value="/api" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+                <input type="text" id="path" name="path" value="/" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
             </div>
             <div class="flex items-center space-x-4">
                 <input type="checkbox" id="includeExpires" name="includeExpires" class="mr-2">
@@ -41,27 +41,29 @@
                 <input type="number" id="maxAge" name="maxAge" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
             </div>
             <div class="flex items-center space-x-4">
-                <input type="checkbox" id="includeSecure" name="includeSecure" class="mr-2" checked>
+                <input type="checkbox" id="includeSecure" name="includeSecure" class="mr-2" >
                 <label for="secure" class="w-24">Secure:</label>
                 <input type="checkbox" id="secure" name="secure" class="ml-auto" checked>
             </div>
             <div class="flex items-center space-x-4">
-                <input type="checkbox" id="includeHttpOnly" name="includeHttpOnly" class="mr-2" checked>
+                <input type="checkbox" id="includeHttpOnly" name="includeHttpOnly" class="mr-2" >
                 <label for="httpOnly" class="w-24">HttpOnly:</label>
                 <input type="checkbox" id="httpOnly" name="httpOnly" class="ml-auto" checked>
             </div>
             <div class="flex items-center space-x-4">
-                <input type="checkbox" id="includeSameSite" name="includeSameSite" class="mr-2" checked>
+                <input type="checkbox" id="includeSameSite" name="includeSameSite" class="mr-2" >
                 <label for="sameSite" class="w-24">SameSite:</label>
                 <select id="sameSite" name="sameSite" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
                     <option value="Strict">Strict</option>
                     <option value="Lax" selected>Lax</option>
                     <option value="None">None</option>
+                    <option value="">*Empty*</option>
+
                 </select>
             </div>
             <div class="text-center">
                 <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600">
-                    Send Cookie
+                    Create Cookie
                 </button>
             </div>
         </form>
@@ -71,7 +73,7 @@
     </div>
 
     <script>
-        let _SET_COOKIE_URL_ = 'https://mule.unes.me/cookies-operations/cookie'
+        let _SET_COOKIE_URL_ = 'http://mule.unes.me/cookies-operations/cookie'
         // Function to calculate future date (6 months from today)
         function getFutureDate(monthsFromNow) {
             const date = new Date();
@@ -100,30 +102,30 @@
 
             if (document.getElementById('includeDomain').checked) {
                 const domain = document.getElementById('domain').value;
-                if (domain) {
+              
                     cookieParts.push(`Domain=${domain}`);
-                }
+                
             }
 
             if (document.getElementById('includePath').checked) {
                 const path = document.getElementById('path').value;
-                if (path) {
-                    cookieParts.push(`Path=${path}`);
-                }
+                
+                cookieParts.push(`Path=${path}`);
+            
             }
 
             if (document.getElementById('includeExpires').checked) {
                 const expires = document.getElementById('expires').value;
-                if (expires) {
+                
                     cookieParts.push(`Expires=${new Date(expires).toUTCString()}`);
-                }
+                
             }
 
             if (document.getElementById('includeMaxAge').checked) {
                 const maxAge = document.getElementById('maxAge').value;
-                if (maxAge) {
+                
                     cookieParts.push(`Max-Age=${maxAge}`);
-                }
+                
             }
 
             if (document.getElementById('includeSecure').checked) {
@@ -140,13 +142,13 @@
 
             if (document.getElementById('includeSameSite').checked) {
                 const sameSite = document.getElementById('sameSite').value;
-                if (sameSite) {
+                
                     cookieParts.push(`SameSite=${sameSite}`);
-                }
+                
             }
 
             const cookieString = cookieParts.join('; ');
-            document.getElementById('cookieStringDisplay').textContent = 'Cookie String: ' + cookieString;
+            document.getElementById('cookieStringDisplay').textContent = 'Set-Cookie: ' + cookieString;
         }
 
         // Add event listeners to all form elements to update cookie string on change
@@ -159,7 +161,7 @@
             event.preventDefault();
             updateCookieString();
 
-            const cookieString = document.getElementById('cookieStringDisplay').textContent.replace('Cookie String: ', '');
+            const cookieString = document.getElementById('cookieStringDisplay').textContent.replace('Set-Cookie: ', '');
 
             try {
                 const response = await fetch(_SET_COOKIE_URL_, {
