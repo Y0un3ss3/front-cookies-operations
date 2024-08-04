@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Cookie Attributes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-between min-h-screen">
+    <div class="bg-white shadow-md rounded-lg p-8 max-w-lg w-full mt-4">
+        <h1 class="text-2xl font-bold mb-6 text-center">Set Cookie Attributes</h1>
+        <form id="cookieForm" class="space-y-4">
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeName" name="includeName" checked class="mr-2">
+                <label for="name" class="w-24">Name:</label>
+                <input type="text" id="name" name="name" value="cart_id" required class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeValue" name="includeValue" checked class="mr-2">
+                <label for="value" class="w-24">Value:</label>
+                <input type="text" id="value" name="value" value="d41d8cd98f00b204e9800998ecf8427e" required class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeDomain" name="includeDomain" class="mr-2">
+                <label for="domain" class="w-24">Domain:</label>
+                <input type="text" id="domain" name="domain" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includePath" name="includePath" class="mr-2" checked>
+                <label for="path" class="w-24">Path:</label>
+                <input type="text" id="path" name="path" value="/api" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeExpires" name="includeExpires" class="mr-2">
+                <label for="expires" class="w-24">Expires:</label>
+                <input type="date" id="expires" name="expires" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeMaxAge" name="includeMaxAge" class="mr-2" checked>
+                <label for="maxAge" class="w-24">Max-Age (seconds):</label>
+                <input type="number" id="maxAge" name="maxAge" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeSecure" name="includeSecure" class="mr-2" checked>
+                <label for="secure" class="w-24">Secure:</label>
+                <input type="checkbox" id="secure" name="secure" class="ml-auto" checked>
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeHttpOnly" name="includeHttpOnly" class="mr-2" checked>
+                <label for="httpOnly" class="w-24">HttpOnly:</label>
+                <input type="checkbox" id="httpOnly" name="httpOnly" class="ml-auto" checked>
+            </div>
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" id="includeSameSite" name="includeSameSite" class="mr-2" checked>
+                <label for="sameSite" class="w-24">SameSite:</label>
+                <select id="sameSite" name="sameSite" class="border border-gray-300 rounded-md px-2 py-1 flex-grow">
+                    <option value="Strict">Strict</option>
+                    <option value="Lax" selected>Lax</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600">
+                    Send Cookie
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="bg-gray-200 w-full py-4 text-center mt-4">
+        <p id="cookieStringDisplay" class="font-mono text-gray-800">Set-Cookie: </p>
+    </div>
+
+    <script>
+        let _SET_COOKIE_URL_ = 'https://mule.unes.me/cookies-operations/cookie'
+        // Function to calculate future date (6 months from today)
+        function getFutureDate(monthsFromNow) {
+            const date = new Date();
+            date.setMonth(date.getMonth() + monthsFromNow);
+            return date.toISOString().split('T')[0];
+        }
+
+        // Calculate Max-Age for 6 months
+        const sixMonthsInSeconds = 6 * 30 * 24 * 60 * 60; // Rough estimate using 30 days per month
+
+        // Set default dates for Expires and Max-Age
+        document.getElementById('expires').value = getFutureDate(6);
+        document.getElementById('maxAge').value = sixMonthsInSeconds;
+
+        // Function to update the cookie string display
+        function updateCookieString() {
+            const cookieParts = [];
+
+            if (document.getElementById('includeName').checked) {
+                const name = document.getElementById('name').value;
+                const value = document.getElementById('value').value;
+                if (name && value) {
+                    cookieParts.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
+                }
+            }
+
+            if (document.getElementById('includeDomain').checked) {
+                const domain = document.getElementById('domain').value;
+                if (domain) {
+                    cookieParts.push(`Domain=${domain}`);
+                }
+            }
+
+            if (document.getElementById('includePath').checked) {
+                const path = document.getElementById('path').value;
+                if (path) {
+                    cookieParts.push(`Path=${path}`);
+                }
+            }
+
+            if (document.getElementById('includeExpires').checked) {
+                const expires = document.getElementById('expires').value;
+                if (expires) {
+                    cookieParts.push(`Expires=${new Date(expires).toUTCString()}`);
+                }
+            }
+
+            if (document.getElementById('includeMaxAge').checked) {
+                const maxAge = document.getElementById('maxAge').value;
+                if (maxAge) {
+                    cookieParts.push(`Max-Age=${maxAge}`);
+                }
+            }
+
+            if (document.getElementById('includeSecure').checked) {
+                if (document.getElementById('secure').checked) {
+                    cookieParts.push(`Secure`);
+                }
+            }
+
+            if (document.getElementById('includeHttpOnly').checked) {
+                if (document.getElementById('httpOnly').checked) {
+                    cookieParts.push(`HttpOnly`);
+                }
+            }
+
+            if (document.getElementById('includeSameSite').checked) {
+                const sameSite = document.getElementById('sameSite').value;
+                if (sameSite) {
+                    cookieParts.push(`SameSite=${sameSite}`);
+                }
+            }
+
+            const cookieString = cookieParts.join('; ');
+            document.getElementById('cookieStringDisplay').textContent = 'Cookie String: ' + cookieString;
+        }
+
+        // Add event listeners to all form elements to update cookie string on change
+        document.querySelectorAll('#cookieForm input, #cookieForm select').forEach(element => {
+            element.addEventListener('input', updateCookieString);
+            element.addEventListener('change', updateCookieString);
+        });
+
+        document.getElementById('cookieForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            updateCookieString();
+
+            const cookieString = document.getElementById('cookieStringDisplay').textContent.replace('Cookie String: ', '');
+
+            try {
+                const response = await fetch(_SET_COOKIE_URL_, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cookieString }),
+                });
+
+                const data = await response.json();
+                console.log('Server response:', data);
+            } catch (error) {
+                console.error('Error sending cookie:', error);
+            }
+        });
+
+        // Update the cookie string initially when the page loads
+        window.addEventListener('DOMContentLoaded', updateCookieString);
+    </script>
+</body>
+</html>
