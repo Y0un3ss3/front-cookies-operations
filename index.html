@@ -73,7 +73,7 @@
     </div>
 
     <script>
-        let _SET_COOKIE_URL_ = 'http://mule.unes.me/cookies-operations/cookie'
+        let _SET_COOKIE_URL_ = 'https://mule.unes.me/cookies-operations/cookie'
         // Function to calculate future date (6 months from today)
         function getFutureDate(monthsFromNow) {
             const date = new Date();
@@ -170,6 +170,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ cookieString }),
+                    credentials: 'include'
                 });
 
                 const data = await response.json();
