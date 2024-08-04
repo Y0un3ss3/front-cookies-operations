@@ -95,7 +95,7 @@
             if (document.getElementById('includeName').checked) {
                 const name = document.getElementById('name').value;
                 const value = document.getElementById('value').value;
-                if (name && value) {
+                if (name) {
                     cookieParts.push(`${encodeURIComponent(name)}=${encodeURIComponent(value)}`);
                 }
             }
