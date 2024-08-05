@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Testing</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Function to add a new header input field pair
+        function addHeaderField() {
+            const headerContainer = document.getElementById('headerContainer');
+            
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'mb-4 flex space-x-2 items-center';
+
+            const headerNameInput = document.createElement('input');
+            headerNameInput.type = 'text';
+            headerNameInput.placeholder = 'Header Name';
+            headerNameInput.className = 'shadow appearance-none border rounded w-full py-3 px-4 text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline';
+            
+            const headerValueInput = document.createElement('input');
+            headerValueInput.type = 'text';
+            headerValueInput.placeholder = 'Header Value';
+            headerValueInput.className = 'shadow appearance-none border rounded w-full py-3 px-4 text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'X';
+            removeButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded';
+            removeButton.onclick = function() {
+                headerContainer.removeChild(headerDiv);
+            };
+
+            headerDiv.appendChild(headerNameInput);
+            headerDiv.appendChild(headerValueInput);
+            headerDiv.appendChild(removeButton);
+            
+            headerContainer.appendChild(headerDiv);
+        }
+
+        // Function to make a GET request to an external website with headers
+        function makeGetRequest() {
+            // Get the URL from the input field
+            const url = document.getElementById('urlInput').value;
+
+            // Create headers object
+            const headers = new Headers();
+            
+            // Get all header input pairs
+            const headerContainer = document.getElementById('headerContainer');
+            const headerDivs = headerContainer.getElementsByClassName('mb-4 flex space-x-2 items-center');
+            
+            for (let headerDiv of headerDivs) {
+                const inputs = headerDiv.getElementsByTagName('input');
+                const headerName = inputs[0].value.trim();
+                const headerValue = inputs[1].value.trim();
+
+                if (headerName && headerValue) {
+                    headers.append(headerName, headerValue);
+                }
+            }
+
+            fetch(url, {
+                method: 'GET',
+                headers: headers,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle the data received from the GET request
+                console.log(data);
+                alert('GET request successful! Check console for data.');
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error('Error:', error);
+                alert('An error occurred while making the GET request.');
+            });
+        }
+    </script>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <div class="max-w-lg w-full bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">CORS Testing</h2>
+            <img src="https://uk.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-vivienne---gaston-side-car--GI0573_PM2_Front%20view.png?imwidth=1090" alt="LV" class="w-full object-cover mb-4">
+            
+            <!-- Flexbox Links -->
+            <div class="flex justify-around mb-4">
+                <a href="https://uk.louisvuitton.com/eng-gb/homepage" class="text-blue-500 hover:underline" target="_blank">LV UK</a>
+                <a href="https://jp.louisvuitton.com/jpn-jp/homepage" class="text-blue-500 hover:underline" target="_blank">LV JP</a>
+                <a href="https://us.louisvuitton.com/eng-us/homepage" class="text-blue-500 hover:underline" target="_blank">LV US</a>
+            </div>
+
+            <div class="mb-4">
+                <label for="urlInput" class="block text-gray-700 text-sm font-bold mb-2">API Endpoint:</label>
+                <input type="text" id="urlInput" value="https://mule.unes.me/cookies-operations/" class="shadow appearance-none border rounded w-full py-3 px-4 text-lg text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            
+            <div id="headerContainer"></div>
+
+            <button type="button" onclick="addHeaderField()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded mb-4">
+                Add Header
+            </button>
+
+            <button onclick="makeGetRequest()" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded">
+                Make GET Request
+            </button>
+        </div>
+    </div>
+</body>
+</html>
